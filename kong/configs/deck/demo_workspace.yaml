@@ -1,0 +1,220 @@
+_format_version: "3.0"
+_workspace: Demo-Workspace
+consumer_groups:
+- name: Ateam
+- name: group-api-v1-customers
+- name: newconsumer
+consumers:
+- custom_id: C1
+  jwt_secrets:
+  - algorithm: HS256
+    key: KNKtxR0CapuSjXPlmXmjGW809cCKV2Lc
+    secret: thejas123
+  username: Consumer1
+- custom_id: C2
+  jwt_secrets:
+  - algorithm: HS256
+    key: mAyaMpWrnitbFPIqCk1DRGumBFOIEtc5
+    secret: karkera123
+  username: Consumer2
+- username: novikong
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: httpbin.org
+  name: demo-service
+  path: /json
+  plugins:
+  - config:
+      auto_approve: false
+      description: null
+      display_name: DemoAppRegistration
+      show_issuer: true
+    enabled: false
+    name: application-registration
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      anonymous: null
+      hide_credentials: false
+    enabled: false
+    name: basic-auth
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  - config:
+      custom_fields_by_lua: {}
+      path: ~/kong-enterprise/Kong/logs/file.log
+      reopen: false
+    enabled: false
+    name: file-log
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      algorithms:
+      - hmac-sha1
+      - hmac-sha256
+      - hmac-sha384
+      - hmac-sha512
+      anonymous: null
+      clock_skew: 300
+      enforce_headers:
+      - date
+      - request-line
+      - host
+      hide_credentials: false
+      validate_request_body: false
+    enabled: false
+    name: hmac-auth
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  - config:
+      allow:
+      - 127.0.0.0/24
+      - 54.13.21.1
+      - 143.1.0.0/24
+      deny:
+      - 172.16.20.71
+      message: This IP is restricted
+      status: 401
+    enabled: false
+    name: ip-restriction
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      anonymous: null
+      claims_to_verify: null
+      cookie_names: []
+      header_names:
+      - authorization
+      key_claim_name: iss
+      maximum_expiration: 0
+      run_on_preflight: true
+      secret_is_base64: false
+      uri_param_names:
+      - jwt
+    enabled: true
+    name: jwt
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      anonymous: null
+      hide_credentials: false
+      key_in_body: false
+      key_in_header: true
+      key_in_query: true
+      key_names:
+      - apikey
+      run_on_preflight: true
+    enabled: false
+    name: key-auth
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+    - ws
+    - wss
+  - config:
+      client_errors_severity: info
+      custom_fields_by_lua: {}
+      host: logs-01.loggly.com
+      key: d96ed31d-a015-4796-b83b-e8fdf4b9d968
+      log_level: info
+      port: 514
+      server_errors_severity: info
+      successful_severity: info
+      tags:
+      - kong
+      timeout: 10000
+    enabled: false
+    name: loggly
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      bandwidth_metrics: true
+      latency_metrics: true
+      per_consumer: false
+      status_code_metrics: true
+      upstream_health_metrics: true
+    enabled: false
+    name: prometheus
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  - config:
+      day: null
+      error_code: 429
+      error_message: API rate limit exceeded
+      fault_tolerant: true
+      header_name: null
+      hide_client_headers: false
+      hour: null
+      limit_by: consumer
+      minute: 5
+      month: null
+      path: null
+      policy: local
+      redis_database: 0
+      redis_host: null
+      redis_password: null
+      redis_port: 6379
+      redis_server_name: null
+      redis_ssl: false
+      redis_ssl_verify: false
+      redis_timeout: 2000
+      redis_username: null
+      second: null
+      year: null
+    enabled: false
+    name: rate-limiting
+    protocols:
+    - grpc
+    - grpcs
+    - http
+    - https
+  port: 80
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: demo-route
+    path_handling: v0
+    paths:
+    - /aarzoo
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000

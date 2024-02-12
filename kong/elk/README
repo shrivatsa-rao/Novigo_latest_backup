@@ -1,0 +1,15 @@
+Elacstic seaech page: http://172.16.22.71:9200
+Kibana Page: http://172.16.22.71:5601
+Filebeat Page: http://172.16.22.71:9010
+
+--------- Verifying Kong Indexes -----------
+
+http://172.16.22.71:9200/_cat/indices  --Verifying kong node registered on ES
+http://172.16.22.71:9200/kong-*/_search   --- verify kong sending the logs to ES
+
+
+------------------- View Dashboards and logs ------- 
+http://172.16.22.71:5601
+Scroll down and search for dashbaords
+Select Kong And Ingress Controller
+View Logs

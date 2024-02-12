@@ -1,0 +1,537 @@
+_format_version: "3.0"
+consumers:
+- keyauth_credentials:
+  - key: PqV43Lp6Ly
+  username: Novigo
+- keyauth_credentials:
+  - key: biE29SruTU
+  username: Novigo-Default
+- keyauth_credentials:
+  - key: h91nM7JULM
+  username: intel
+- keyauth_credentials:
+  - key: xLeFPXDqZm
+  username: intel-Sarji-Default 
+- keyauth_credentials:
+  - key: a6bHmDPaYM
+  username: qwerty
+- keyauth_credentials:
+  - key: hTJ0yRYXZN
+  username: qwerty-Default 
+- keyauth_credentials:
+  - key: HFBU05rYUL
+  username: shuttlerefinitiv
+- keyauth_credentials:
+  - key: H8hn7Mqpai
+  username: shuttlerefinitiv-DefaultTest
+- keyauth_credentials:
+  - key: IniF5yQTht
+  username: shuttlerefinitiv-Sarji-Shimoga
+plugins:
+- config:
+    anonymous: null
+    hide_credentials: false
+    key_in_body: false
+    key_in_header: true
+    key_in_query: true
+    key_names:
+    - apiKey
+    run_on_preflight: true
+  enabled: true
+  name: key-auth
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+- config:
+    bandwidth_metrics: true
+    latency_metrics: true
+    per_consumer: true
+    status_code_metrics: true
+    upstream_health_metrics: true
+  enabled: true
+  name: prometheus
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+- config:
+    cache_control: false
+    cache_ttl: 300
+    content_type:
+    - application/json; charset=utf-8
+    memory:
+      dictionary_name: kong_db_cache
+    request_method:
+    - GET
+    - HEAD
+    response_code:
+    - 200
+    storage_ttl: null
+    strategy: memory
+    vary_headers: null
+    vary_query_params: null
+  enabled: true
+  name: proxy-cache
+  protocols:
+  - grpc
+  - grpcs
+  - http
+  - https
+services:
+- connect_timeout: 60000
+  enabled: true
+  host: api.stag.testtracker.xyz
+  name: AuditLog
+  path: /auditlog
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: AuditLog-Route
+    path_handling: v0
+    paths:
+    - /auditlog-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.testtracker.xyz
+  name: CallMasking
+  path: /org/Employee
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: CallMasking-Route
+    path_handling: v0
+    paths:
+    - /callmasking-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.stag.testtracker.xyz
+  name: Email
+  path: /email
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Email-Route
+    path_handling: v0
+    paths:
+    - /email-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.stag.testtracker.xyz
+  name: Identity
+  path: /identity
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Identity-Route
+    path_handling: v0
+    paths:
+    - /identity-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.stag.testtracker.xyz
+  name: Notification
+  path: /Notification
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Notification-Route
+    path_handling: v0
+    paths:
+    - /notification-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.stag.testtracker.xyz
+  name: Report
+  path: /reports
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Report-Route
+    path_handling: v0
+    paths:
+    - /report-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.stag.testtracker.xyz
+  name: SMS
+  path: /sms
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: SMS-ROUTE
+    path_handling: v0
+    paths:
+    - /sms-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api-voice.solutionsinfini.com
+  name: call-musk1
+  path: /v1
+  port: 80
+  protocol: http
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Callmusk1-Route
+    path_handling: v0
+    paths:
+    - /callmusk1-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api-smartflo.tatateleservices.com
+  name: call-musk2
+  path: /v1
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Callmusk2-Route
+    path_handling: v0
+    paths:
+    - /callmusk2-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: maps.trackervigil.com
+  name: directions
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Direction-Route
+    path_handling: v0
+    paths:
+    - /direction-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: maps.trackervigil.com
+  name: distance
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Distance-Route
+    path_handling: v0
+    paths:
+    - /distance-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: api.stag.testtracker.xyz
+  name: fileupload
+  path: /fileupload
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: FileUpload-Route
+    path_handling: v0
+    paths:
+    - /fileupload-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: maps.trackervigil.com
+  name: geo-location
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Maps-Route
+    path_handling: v0
+    paths:
+    - /maps-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: geocoder.trackervigil.com
+  name: geocoding
+  path: /geocoder
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Geocoding-route
+    path_handling: v0
+    paths:
+    - /geo-coding-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: us1.locationiq.com
+  name: location
+  path: /v1/reverse
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    methods:
+    - GET
+    name: location-Route
+    path_handling: v0
+    paths:
+    - /location-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+- connect_timeout: 60000
+  enabled: true
+  host: maps.trackervigil.com
+  name: nominatim
+  port: 443
+  protocol: https
+  read_timeout: 60000
+  retries: 5
+  routes:
+  - https_redirect_status_code: 426
+    name: Nominatim-Route
+    path_handling: v0
+    paths:
+    - /nominatim-route
+    preserve_host: false
+    protocols:
+    - http
+    - https
+    regex_priority: 0
+    request_buffering: true
+    response_buffering: true
+    strip_path: true
+  write_timeout: 60000
+upstreams:
+- algorithm: round-robin
+  hash_fallback: none
+  hash_on: none
+  hash_on_cookie_path: /
+  healthchecks:
+    active:
+      concurrency: 10
+      healthy:
+        http_statuses:
+        - 200
+        - 302
+        interval: 0
+        successes: 0
+      http_path: /
+      https_verify_certificate: true
+      timeout: 1
+      type: http
+      unhealthy:
+        http_failures: 0
+        http_statuses:
+        - 429
+        - 404
+        - 500
+        - 501
+        - 502
+        - 503
+        - 504
+        - 505
+        interval: 0
+        tcp_failures: 0
+        timeouts: 0
+    passive:
+      healthy:
+        http_statuses:
+        - 200
+        - 201
+        - 202
+        - 203
+        - 204
+        - 205
+        - 206
+        - 207
+        - 208
+        - 226
+        - 300
+        - 301
+        - 302
+        - 303
+        - 304
+        - 305
+        - 306
+        - 307
+        - 308
+        successes: 0
+      type: http
+      unhealthy:
+        http_failures: 0
+        http_statuses:
+        - 429
+        - 500
+        - 503
+        tcp_failures: 0
+        timeouts: 0
+    threshold: 0
+  name: Test-Upstyream
+  slots: 10000
+  targets:
+  - target: api.xyz.test.com:8000
+    weight: 80
+  - target: api2.xyz.test.com:8000
+    weight: 20

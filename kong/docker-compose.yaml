@@ -1,0 +1,284 @@
+version: '2.2'
+
+networks:
+  kong-edu-net:
+    name: kong-edu-net
+    driver: bridge
+
+services:
+  postgres:
+    networks:
+      - kong-edu-net
+    image: postgres:13.1
+    container_name: postgres
+    hostname: postgres
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "kong"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    restart: on-failure
+    stdin_open: true
+    tty: true
+    environment:
+      POSTGRES_DB: kong
+      POSTGRES_PASSWORD: kong
+      POSTGRES_USER: kong
+
+  kong-migrations:
+      networks:
+      - kong-edu-net
+      image: kong/kong-gateway:${KONG_VERSION}
+      container_name: kong-migrations
+      depends_on:
+      - postgres        
+      command: kong migrations bootstrap
+      restart: on-failure
+      environment:
+        KONG_DATABASE: postgres
+        KONG_PG_HOST: postgres
+        KONG_PG_DATABASE: kong
+        KONG_PG_USER: kong
+        KONG_PG_PASSWORD: kong
+        KONG_PASSWORD: password
+        KONG_LICENSE_DATA: ${KONG_LICENSE_DATA}
+    
+  kong-migrations-up:
+    networks:
+    - kong-edu-net
+    image: kong/kong-gateway:${KONG_VERSION}
+    container_name: kong-migrations-up
+    depends_on:
+    - kong-migrations
+    command: kong migrations up && kong-migrations finish
+    restart: on-failure
+    environment:
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PASSWORD: password
+      KONG_LICENSE_DATA: ${KONG_LICENSE_DATA}
+
+  kong:
+    networks:
+    - kong-edu-net
+    image: kong/kong-gateway:${KONG_VERSION}
+    container_name: kong
+    depends_on:
+    - kong-migrations-up
+    healthcheck: 
+      test: ["CMD", "kong", "health"] 
+      interval: 30s 
+      timeout: 30s 
+      retries: 3 
+    restart: on-failure
+    volumes: 
+      - /home/novigo/kong-enterprise/kong/configs/kong.conf:/etc/kong/kong.conf
+      - /home/novigo/kong-enterprise/kong/plugins/database-connector:/usr/local/share/lua/5.1/kong/plugins/database-connector
+    environment: 
+      KONG_DATABASE: postgres
+      KONG_PG_HOST: postgres
+      KONG_PG_DATABASE: kong
+      KONG_PG_USER: kong
+      KONG_PG_PASSWORD: kong
+      KONG_PASSWORD: password
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_PORTAL_API_LISTEN: 0.0.0.0:8004
+      # KONG_PROXY_ACCESS_LOG: /srv/shared/logs/proxy_access.log 
+      # KONG_PROXY_ERROR_LOG: /srv/shared/logs/proxy_error.log 
+      # KONG_PROXY_STREAM_ACCESS_LOG: /srv/shared/logs/proxystream_access.log basic 
+      # KONG_PROXY_STREAM_ERROR_LOG: /srv/shared/logs/proxystream_error.log 
+      KONG_STATUS_LISTEN: 0.0.0.0:8100
+      KONG_ADMIN_GUI_URL: http://172.16.20.71:8002
+      KONG_PORTAL_GUI_HOST: 172.16.20.71:8003
+      KONG_PORTAL: "on"
+      KONG_PORTAL_AUTH: "basic-auth"
+      #KONG_PORTAL_SESSION_CONF: "{\"cookie_name\": \"manager-session\", \"secret\": \"this_is_my_other_secret\", \"storage\": \"kong\", \"cookie_secure\": true, \"cookie_lifetime\": 3600, \"cookie_same_site\": \"None\"}"
+      KONG_PORTAL_APP_AUTH: "external-oauth2" 
+      KONG_PORTAL_SESSION_CONF: "{ \"cookie_name\":\"portal_session\",\"secret\":\"my-secret\",\"storage\":\"kong\",\"cookie_secure\":false}"
+
+      # SMTP Server Configuration
+      KONG_PORTAL_EMAIL_VERIFICATION: "off"
+      KONG_PORTAL_EMAILS_FROM: "kongtest@gmail.com"
+      KONG_PORTAL_EMAILS_REPLY_TO: "kongtest@gmail.com"
+      KONG_ADMIN_EMAILS_FROM: "kongtest@gmail.com"
+      KONG_ADMIN_EMAILS_REPLY_TO: "kongtest@gmail.com"
+      # KONG_SMTP_MOCK: "off"
+      # KONG_SMTP_ADMIN_EMAILS: "kongtest@gmail.com"
+      # KONG_SMTP_HOST: "smtp"
+      # KONG_SMTP_PORT: 1025
+      KONG_VITALS: "on"
+      KONG_LICENSE_DATA: ${KONG_LICENSE_DATA}
+      KONG_LOG_LEVEL: "error"
+      #KONG_ENFORCE_RBAC: "on"
+      #KONG_ADMIN_GUI_AUTH: "basic-auth"
+      #KONG_ADMIN_GUI_SESSION_CONF: "{ \"cookie_name\": \"manager-session\", \"secret\": \"secret\", \"storage\": \"kong\", \"cookie_secure\": false, \"cookie_lifetime\": 3600, \"cookie_same_site\": \"Off\"}"
+      #KONG_ADMIN_GUI_SESSION_CONF: "{\"secret\":\"secret\",\"storage\":\"kong\",\"cookie_secure\":false}"
+    ports:
+      - "8000:8000/tcp"
+      - "8002:8002/tcp"
+      - "8001:8001/tcp"
+      - "8004:8004/tcp"
+      - "8443:8443/tcp"
+      - "8003:8003/tcp"
+      - "8100:8100/tcp"
+  
+  ################################################################
+  # Mockbin Upstream Service API
+  ################################################################
+  mockbin:
+    networks:
+      - kong-edu-net
+    image: mashape/mockbin:latest
+    container_name: mockbin
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 30s
+      timeout: 30s
+      retries: 3
+    restart: on-failure
+    ports:
+      - "8080:8080/tcp"
+
+
+  ################################################################
+  # Kong go-echo Upstream Service API
+  ################################################################
+  kongecho:
+    networks:
+      - kong-edu-net
+    image: kong/go-echo:latest
+    container_name: kongecho
+    restart: on-failure
+    ports:
+      - "1024:1025/tcp"
+      - "1026:1026/udp"
+      - "1027:1027"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.1'
+          memory: 128M
+
+
+  
+  ################################################################
+  # Prometheus Database
+  ################################################################
+  prometheus:
+      networks:
+        - kong-edu-net
+      image: prom/prometheus:v2.34.0
+      container_name: prometheus
+      hostname: prometheus
+      command: --config.file=/etc/prometheus/prometheus.yaml --log.level=debug
+      healthcheck:
+        test: ["CMD", "wget", "-S", "--spider", "http://prometheus:9090"]
+        interval: 10s
+        timeout: 15s
+        retries: 10  
+      ports:
+      - 9090:9090
+      volumes:
+      - ../monitoring/prometheus.yaml:/etc/prometheus/prometheus.yaml
+
+  grafana:
+      networks:
+        - kong-edu-net
+      image: grafana/grafana:8.4.6
+      container_name: grafana
+      hostname: grafana
+      volumes:
+      - /home/novigo/kong-enterprise/monitoring/grafana/grafana.ini:/usr/share/grafana/conf/grafana.ini
+      depends_on:
+      - prometheus
+      healthcheck:
+        test: ["CMD", "wget", "-S", "--spider", "http://grafana:3000"]
+        interval: 10s
+        timeout: 15s
+        retries: 10 
+      ports:
+      - 3000:3000
+      environment:
+        GF_SMTP_ENABLED: "true"
+        GF_SMTP_HOST: smtp-mail.outlook.com:587
+        GF_SMTP_PASSWORD: bmdnrrxpiidzeqyu #16 digit 2FA AppPassword  
+        GF_SMTP_USER: aarzookhan1996@outlook.com
+        GF_SMTP_SKIP_VERIFY: "true"
+        GF_SMTP_FROM_ADDRESS: aarzookhan1996@outlook.com
+        GF_SMTP_FROM_NAME: Grafana
+        GF_SMTP_STARTTLS_POLICY: "true"
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.3
+    container_name: elasticsearch
+    environment: 
+    - discovery.type=single-node
+    - xpack.security.enabled=false
+    - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    ports:
+    - 9200:9200
+    - 9300:9300
+    networks:
+    - kong-edu-net
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.9.3
+    container_name: kibana
+    depends_on:
+    - elasticsearch
+    ports: 
+    - 5601:5601
+    networks:
+    - kong-edu-net
+    
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:7.9.3
+    container_name: filebeat
+    user: root
+    ports: 
+    - 9010:9010
+    depends_on:
+    - elasticsearch
+    command: ["--strict.perms=false"]
+    volumes:
+    - ./elk/filebeat.yaml:/usr/share/filebeat/filebeat.yml
+    - ./elk/elasticsearch_template.json:/usr/share/filebeat/elasticsearch_template.json  
+    networks:
+    - kong-edu-net
+
+    
+  smtp-server:
+    networks:
+    - kong-edu-net
+    image: reachfive/fake-smtp-server:0.8.1
+    container_name: smtp
+    hostname: smtp
+    healthcheck:
+      test: ["CMD-SHELL", "exit 0"]
+      interval: 16s
+      timeout: 16s
+      retries: 16        
+    restart: on-failure
+    ports:
+    - "1080:1080/tcp"
+
+  mysql-db:
+    image: mysql:latest
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_HOST: localhost
+      MYSQL_DATABASE: org
+      MYSQL_USER: root
+      MYSQL_PASSWORD: Abhi@4224
+    volumes:
+      - ./mysql-data:/var/lib/mysql
+
+   
+  

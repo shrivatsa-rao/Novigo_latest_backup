@@ -1,0 +1,11 @@
+global:
+  scrape_interval: 30s
+
+
+scrape_configs:
+  # Prometheus itself
+  # This uses the static method to get metrics endpoints
+  - job_name: "kong"
+    honor_labels: true
+    static_configs:
+      - targets: ["172.16.20.71:8001","144.126.255.85:8001"]
